@@ -1,5 +1,6 @@
 import ee
 import pandas as pd
+import calendar
 
 # Authenticate and initialize Earth Engine
 ee.Authenticate()
@@ -23,7 +24,7 @@ end_date = '2023-12-31'
 # Load the Landsat 8 image collection, filtering by date and cloud cover
 collection = ee.ImageCollection('LANDSAT/LC08/C02/T1_TOA') \
     .filterDate(start_date, end_date) \
-    .filter(ee.Filter.lt('CLOUD_COVER', 30))
+    #.filter(ee.Filter.lt('CLOUD_COVER', 30))
 
 # Function to calculate NDVI
 def add_ndvi(image):
@@ -56,7 +57,7 @@ def get_monthly_median_ndvi(year, month):
     ndvi_value = stats.get('NDVI').getInfo() if stats.get('NDVI') is not None else None
     return {
         'year': year,
-        'month': month,
+        'month': calendar.month_name[month],
         'ndvi': ndvi_value
     }
 
@@ -74,6 +75,6 @@ for year in range(2015, 2024):
 df = pd.DataFrame(results)
 
 # Save the results to a CSV file
-df.to_csv('monthly_median_ndvi_30per_cc.csv', index=False)
+df.to_csv('monthly_median_ndvi_no_cc_filter.csv', index=False)
 
 print("CSV file has been saved.")
